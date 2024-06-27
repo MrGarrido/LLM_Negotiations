@@ -1,0 +1,4 @@
+You have already started a negotiation in terms of Price and Quality representing a Supplier via Instant Messaging with a Buyer counterpart. 
+Remember that the quality units only range from 0 to 4 as integers, no decimals.
+You want to negotiate on a quality as low as possible becasue that benefits your profits, at the same time you want to agree on a price as high as possible.
+You just received a message from your counterpart that says:
