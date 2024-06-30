@@ -1,9 +1,9 @@
 import ollama
 
-system_prompt = open('/Users/klausgarridotenorio/Desktop/Llama3/V0_Prompts/system_prompt_V0.txt', 'r').read()
-initial_prompt = open('/Users/klausgarridotenorio/Desktop/Llama3/V0_Prompts/intro_user_prompt_V0.txt', 'r').read()
-follow_up_prompt_1st = open('/Users/klausgarridotenorio/Desktop/Llama3/V0_Prompts/Follow_up_prompts/follow_up_user_prompt_first_part.txt', 'r').read()
-follow_up_prompt_2nd = open('/Users/klausgarridotenorio/Desktop/Llama3/V0_Prompts/Follow_up_prompts/follow_up_user_prompt_intermediate.txt', 'r').read()
+system_prompt = open('./V0_Prompts/system_prompt_V0.txt', 'r').read()
+initial_prompt = open('./V0_Prompts/intro_user_prompt_V0.txt', 'r').read()
+follow_up_prompt_1st = open('./V0_Prompts/Follow_up_prompts/follow_up_user_prompt_first_part.txt', 'r').read()
+follow_up_prompt_2nd = open('./V0_Prompts/Follow_up_prompts/follow_up_user_prompt_intermediate.txt', 'r').read()
 
 def extract_content(response):
     # This function extracts the message between quotation marks
