@@ -4,8 +4,15 @@ This repository leverages Ollama.
 
 1st install Ollama through https://ollama.com
 
-2nd Run ollama in your terminal trough  
-2nd Run the version of the you Pyhton script prefer (Negotiaton_LLM_VX.py)
+2nd Run ollama in your terminal through
+
+ollama run llama3
+
+3rd Paste this line of code in yout terminal to create a tailored LLM named "reader"
+
+ollama create reader -f ./V2_Reviewing_potential_offers/Modelfile 
+
+Finally, Run the version of the you Pyhton script prefer (Negotiaton_LLM_VX.py)
 
 ## Arquitecture Iterations
 
