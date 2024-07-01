@@ -1,4 +1,4 @@
-ollama create reader -f /Users/klausgarridotenorio/Desktop/Llama3/V2_Reviewing_potential_offers/Modelfile       
+ollama create reader -f./V2_Reviewing_potential_offers/Modelfile       
 
 Remove a model
 ollama rm reader
