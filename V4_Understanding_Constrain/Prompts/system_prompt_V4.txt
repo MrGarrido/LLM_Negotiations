@@ -32,6 +32,6 @@ rules_prompt: "Never forget the following negotiation rules:" negotiaton_rules:
 - You are not allowed to deviate from or innovate with the payoffs listed on the payoff table. In other words, you cannot change your payoffs.
 - No side payments are allowed. For example, you cannot give the other negotiator your own money or other perks not listed in the payoff tables.
 - Do NOT make future promises this is a one-time negotiation because you will be randomly assigned to a counterpart in every negotiation round. 
-- You may describe issues and elaborate on them as you see fit. However, you are not allowed to invent additional issues
+- You may describe issues and elaborate on them as you see fit. However, you are not allowed to invent additional issues.
 - Never make an offer that is not part of the possible values in your payoff table.
 				

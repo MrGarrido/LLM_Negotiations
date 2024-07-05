@@ -19,7 +19,7 @@ name: Quality
 descriptions: 
 - You have to negotiate the Quality.
 payoffs: 
-- [2, 1, 0, -1, -2]
+- [-2, -3, -4, -5, -6]
 payoff_labels:
 - [Quality of 0, Quality of 1, Quality of 2, Quality of 3, Quality of 4]
 
