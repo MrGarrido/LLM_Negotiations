@@ -14,6 +14,8 @@ ollama create reader -f ./V2_Reviewing_potential_offers/Modelfile
 
 Finally, Run the version of the you Pyhton script prefer (Negotiaton_LLM_VX.py)
 
+
+
 ## Arquitecture Iterations
 
 ### **V0**:
@@ -40,8 +42,11 @@ Finally, Run the version of the you Pyhton script prefer (Negotiaton_LLM_VX.py)
 ### **V3**:
 - **Rule-Based on both User and Bot**: If-Else Statement evaluates the profitability of the offer of the user and bot and prepares tailored prompts
 
-### **V4 TO DO**:
+### **V4 **:
 - **Totally NEW Bot Led**: Understand the constrain of the counterpart first
-- **Actively ask for the user Ideal P & Q combination**: Persist on a combination
-- **Directly calculate the user profitability and own**: Tailored prompts on this 
+- **Actively ask for the user Ideal P & Q combination**: Improved check of best offer within the bot loop (now it contrasts against the best user offer)
+- **Directly calculate the user profitability and own**: Stored in separate dictionaries (Next step is pareto efficient bidding strategy)
+
+### **V4.5 TO DO **:
+- ** Pareto Efficieng Bidding Strategy**: Leverage the profit function to send Sensible offers
 
