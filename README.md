@@ -14,7 +14,7 @@ ollama create reader -f ./V2_Reviewing_potential_offers/Modelfile
 
 Finally, Run the version of the you Pyhton script prefer (Negotiaton_LLM_VX.py)
 
-V4 also uses the ollama create constrain_reader -f./V4_Understanding_Constrain/Modelfile_reader_of_constrains
+V4 also requires the input: ollama create constrain_reader -f./V4_Understanding_Constrain/Modelfile_reader_of_constrains
 
 
 
