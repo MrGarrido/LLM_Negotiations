@@ -7,3 +7,9 @@ ollama create constrain_reader -f./V4_Understanding_Constrain/Modelfile_reader_o
 
 Remove a model
 ollama rm constrain_reader
+
+ollama create defined_path -f./V4_Understanding_Constrain/Modelfile_Defined_path_interaction
+
+Remove a model
+ollama rm defined_path
+

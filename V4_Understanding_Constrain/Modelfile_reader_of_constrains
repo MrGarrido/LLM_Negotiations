@@ -13,8 +13,15 @@ If the message contain a different type of numerical input for quality or deal/n
 Buyers have to negotaiate on a price bellow their market price. Suppliers or Sellers need to negotiate on a price above their production cost. 
 
 Examples:
-Message: The market price we have at a quality of 0 is 8. 
+
+Message: 8.0
 Output: [8]
+
+Message: 8
+Output: [8]
+
+Message: The market price we have at a quality of 0 is 9. 
+Output: [9]
 
 Message: That depends on the level of quality, if we get a quality of 2 then the Selling Market Price (SP) could go up to 10
 Output: [10]

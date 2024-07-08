@@ -102,7 +102,7 @@ def reader_of_offers(message):
         except ValueError:
             quality = quality.replace('<', '').replace('>', '').strip()
             try:   
-                quality == int(quality)
+                quality = int(quality)
             except ValueError:
                 if quality=='Quality':
                     quality=''
@@ -119,7 +119,7 @@ def reader_of_offers(message):
             # Extract numeric value first, then handle '<' or '>'.
             price = price.replace('€', '').replace('<', '').replace('>', '').strip()
             try:   
-                price == int(price)
+                price = int(price)
             except ValueError:
                 if price=='Price in Euros':
                     price=''
@@ -304,7 +304,6 @@ def main():
     interactions = [{"role": "system", "content": response['message']['content']}]
 
     offers={}
-
     # Allow user to continue the conversation
     while True:
         user_message = input("Your response (type 'exit' to end): ")
