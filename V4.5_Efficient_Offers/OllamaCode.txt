@@ -1,0 +1,11 @@
+ollama create reader -f./V4_Understanding_Constrain/Modelfile_reader_of_offers
+
+Remove a model
+ollama rm reader
+
+ollama create constrain_reader -f./V4_Understanding_Constrain/Modelfile_reader_of_constrains
+
+Remove a model
+ollama rm constrain_reader
+
+

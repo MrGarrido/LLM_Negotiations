@@ -2,21 +2,45 @@ import ollama
 import re
 import random
 
-system_prompt = open('./V4_Understanding_Constrain/Prompts/system_prompt_V4.txt', 'r').read()
-initial_prompt = open('./V4_Understanding_Constrain/Prompts/intro_user_prompt.txt', 'r').read()
-non_profitable_offer = open('./V4_Understanding_Constrain/Prompts/non_profitable_increaseP_DecreaseQ.txt', 'r').read()
-follow_up_prompt_2nd = open('./V4_Understanding_Constrain/Prompts/follow_up_user_prompt_intermediate.txt', 'r').read()
-
-greedy=3
-bot_role='supplier' # or 'buyer' 
-if bot_role=='buyer':
-    context_constrain='Production Cost (PC)'
-    randomly_drawn=random.choice([1, 2, 3])
-    bot_constrain=8
-else:
+bot_role='buyer' # or 'buyer'  DECISION CHOOOSE!! 
+greedy_design_choice=1 # Bot will only accept offers that yield a profit ** higher or equal to the maximum (1) / MINIMUM (0) profit in the pareto efficient frontier. 
+if bot_role == 'supplier':
     context_constrain= 'Selling Price to Consumer (SP)'
     randomly_drawn=random.choice([8, 9, 10])    
-    bot_constrain=2
+    bot_constrain=3     ###ANOTHER DECISION
+
+    system_prompt_before_constrain = open('./V4.5_Efficient_Offers/Prompts_Bot_Supplier/System_Prompts/system_prompt_before_Constrain.txt', 'r').read()
+    system_prompt_after_constrain_before_price = open('./V4.5_Efficient_Offers/Prompts_Bot_Supplier/System_Prompts/system_prompt_after_Constrain_before_Price.txt', 'r').read()
+    system_prompt_after_price = open('./V4.5_Efficient_Offers/Prompts_Bot_Supplier/System_Prompts/system_prompt_after_Price.txt', 'r').read()
+    system_final_prompt=system_prompt_before_constrain+ f"{bot_constrain}€" + system_prompt_after_constrain_before_price + str([item - bot_constrain for item in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]]) +system_prompt_after_price
+
+    initial_prompt = open('./V4.5_Efficient_Offers/Prompts_Bot_Supplier/intro_user_prompt.txt', 'r').read()
+
+    non_profitable_offer = open('./V4.5_Efficient_Offers/Prompts_Bot_Supplier/non_profitable_Send_Pareto_Efficient_Offer.txt', 'r').read()
+    follow_up_prompt_2nd = open('./V4.5_Efficient_Offers/Prompts_Bot_Supplier/follow_up_user_message.txt', 'r').read()
+    follow_up_conversation = open('./V4.5_Efficient_Offers/Prompts_Bot_Supplier/follow_up_conversation_history.txt', 'r').read()
+    send_pareto_efficient = open('./V4.5_Efficient_Offers/Prompts_Bot_Supplier/Send_Pareto_Efficient_Offer.txt', 'r').read()
+    profitable_offer_prompt = open('.//V4.5_Efficient_Offers/Prompts_Bot_Supplier/Profitable_But_Send_Pareto_Efficient_Offer.txt', 'r').read()
+
+else:
+    context_constrain='Production Cost (PC)'
+    randomly_drawn=random.choice([1, 2, 3])
+    bot_constrain=10  ###ANOTHER DECISION
+
+    system_prompt_before_constrain = open('./V4.5_Efficient_Offers/Prompts_Bot_Buyer/System_Prompts/system_prompt_before_Constrain.txt', 'r').read()
+    system_prompt_after_constrain_before_price = open('./V4.5_Efficient_Offers/Prompts_Bot_Buyer/System_Prompts/system_prompt_after_Constrain_before_Price.txt', 'r').read()
+    system_prompt_after_price = open('./V4.5_Efficient_Offers/Prompts_Bot_Buyer/System_Prompts/system_prompt_after_Price.txt', 'r').read()
+    system_final_prompt=system_prompt_before_constrain+ f"{bot_constrain}€" + system_prompt_after_constrain_before_price + str([bot_constrain - item for item in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]]) +system_prompt_after_price
+
+    initial_prompt = open('./V4.5_Efficient_Offers/Prompts_Bot_Buyer/intro_user_prompt.txt', 'r').read()
+    non_profitable_offer = open('./V4.5_Efficient_Offers/Prompts_Bot_Buyer/non_profitable_Send_Pareto_Efficient_Offer.txt', 'r').read()
+    follow_up_prompt_2nd = open('./V4.5_Efficient_Offers/Prompts_Bot_Buyer/follow_up_user_message.txt', 'r').read()
+    follow_up_conversation = open('./V4.5_Efficient_Offers/Prompts_Bot_Buyer/follow_up_conversation_history.txt', 'r').read()
+    send_pareto_efficient = open('./V4.5_Efficient_Offers/Prompts_Bot_Buyer/Send_Pareto_Efficient_Offer.txt', 'r').read()
+    profitable_offer_prompt = open('.//V4.5_Efficient_Offers/Prompts_Bot_Buyer/Profitable_But_Send_Pareto_Efficient_Offer.txt', 'r').read()
+
+
+
 
 
 def extract_content(response):
@@ -28,21 +52,29 @@ def extract_content(response):
         if ':' in content:
             content = content.split(':', 1)[1].strip()
         
-        # Split the content at line breaks and take only the first part NOT ACTIVE
-        #content = content.split('\n', 1)[0]
+        # Split the content at line breaks and take only the first part
+        if '\n' in content:
+            content = content.split('\n', 1)[0]
 
         # Find the position of the first and last quote
         start = content.find('"') + 1
         end = content.rfind('"')
         
-        # Remove text within parentheses if no quotes are found
-        while '(' in content and ')' in content:
-            start = content.find('(')
-            end = content.find(')', start) + 1
-            if start >= 0 and end > start:
-                content = content[:start] + content[end:]
+        # Extract text within the quotes if quotes are found
+        if start > 0 and end > start:
+            content = content[start:end]
+        else:
+            # Remove text within parentheses if no quotes are found
+            while '(' in content and ')' in content:
+                start = content.find('(')
+                end = content.find(')', start) + 1
+                if start >= 0 and end > start:
+                    content = content[:start] + content[end:]
+        
         return content.strip()  # Return the cleaned content
+        
     return response['message']['content']
+
 
 def string_to_list(s): 
     # Remove the square brackets
@@ -220,7 +252,82 @@ def profit_calculator(offer,offers,offers_profit_user,constrain_of_user):
 
     return(profit_bot,offers,offers_profit_user)
 
-def evaluate_profitability(last_offer_profit,all_offers_dict,offers,offers_profit_user,constrain_of_user, user_offers_dictionary): ## FIND HOW TO INCLUDE USER OFFERS AS MAX PROFIT!!
+def pareto_efficient_offer(constrain_of_user, constrain_bot, bot_role):
+    
+    # Define the range of prices in Euros
+    prices = list(range(1, 13))  # This creates a list from 1€ to 12€
+
+    # Define the range of quality ratings
+    qualities = list(range(5))  # This creates a list from 0 to 4
+
+    # Create a list of tuples where each tuple is a combination of price and quality
+    price_quality_combinations = [(price, quality) for price in prices for quality in qualities]
+
+    # Calculate supplier and buyer profits for each price-quality combination
+    supplier_profits = {}
+    buyer_profits = {}
+    for price, quality in price_quality_combinations:
+        if bot_role=='buyer':
+            profit_buyer = constrain_bot - price + quality
+            profit_supplier = price - constrain_of_user - quality
+        else:
+            profit_buyer = constrain_of_user - price + quality
+            profit_supplier = price - constrain_bot - quality
+
+        buyer_profits[(price, quality)] = profit_buyer
+        supplier_profits[(price, quality)] = profit_supplier
+        
+    # Find Pareto Efficient Combinations
+    pareto_efficient_combinations_with_profit = []
+    dictionary_of_efficient_offers ={}
+    dictionary_of_efficient_offers_for_BOT={}
+
+    # Iterate through each combination to evaluate efficiency
+    for combination in price_quality_combinations:
+        price, quality = combination
+        supplier_profit = supplier_profits[combination]
+        buyer_profit = buyer_profits[combination]
+        
+        # Calculate collective profit and absolute difference
+        collective_profit = supplier_profit + buyer_profit
+        abs_difference = abs(supplier_profit - buyer_profit)
+        
+        # Check if the combination is Pareto efficient
+        is_pareto_efficient = True
+        for other_combination in price_quality_combinations:
+            if other_combination == combination:
+                continue
+            other_supplier_profit = supplier_profits[other_combination]
+            other_buyer_profit = buyer_profits[other_combination]
+            
+            other_collective_profit = other_supplier_profit + other_buyer_profit
+            other_abs_difference = abs(other_supplier_profit - other_buyer_profit)
+            
+            # Pareto efficiency condition: no other combination should be better in both objectives
+            if (other_collective_profit > collective_profit and other_abs_difference <= abs_difference) or \
+            (other_collective_profit >= collective_profit and other_abs_difference < abs_difference):
+                is_pareto_efficient = False
+                break
+        if is_pareto_efficient:
+            pareto_efficient_combinations_with_profit.append((price, quality, supplier_profit, buyer_profit))
+            dictionary_of_efficient_offers[(price, quality)] = (supplier_profit, buyer_profit)
+            if bot_role=='buyer':
+                dictionary_of_efficient_offers_for_BOT[(price, quality)] = (buyer_profit)
+            else:
+                dictionary_of_efficient_offers_for_BOT[(price, quality)] = (supplier_profit)
+
+    if dictionary_of_efficient_offers:
+        max_value = max(dictionary_of_efficient_offers_for_BOT.values())
+        max_keys = [key for key, value in dictionary_of_efficient_offers_for_BOT.items() if value == max_value]
+        offers_string = ' | '.join([f"Price of {price}€ and quality of {quality}" for price, quality in max_keys])
+        if greedy_design_choice==1:
+            greedyy=max(dictionary_of_efficient_offers_for_BOT.values())
+        else:
+            greedyy=min(dictionary_of_efficient_offers_for_BOT.values())
+        return (greedyy,offers_string)
+        #return(max_keys) #GREEDY
+
+def evaluate_profitability(last_offer_profit,all_offers_dict,offers,offers_profit_user,constrain_of_user, user_offers_dictionary, greedy): 
 
     # Check if the last offer's profitability is worse than or equal to the best stored offer
     if all_offers_dict:
@@ -254,7 +361,7 @@ def evaluate_profitability(last_offer_profit,all_offers_dict,offers,offers_profi
             else:
                 last_offer_profit=max_profit
         
-        if last_offer_profit <= greedy: #Accepts profits of just a single unit but if we set it to 3 it will be greedy
+        if last_offer_profit < greedy: #Accepts profits of just a single unit but if we set it to 3 it will be greedy
             if last_offer_profit == max_profit:
                 # Find all offers with the max profit
                 return('the offer proposed not profitable and there is not previous profitable offer I should come up with a new counter offer',best_offer)  
@@ -263,13 +370,11 @@ def evaluate_profitability(last_offer_profit,all_offers_dict,offers,offers_profi
                 return("the offer proposed not profitable and is worse than a previous profitable one",best_offer) 
             elif (last_offer_profit < max_profit) and (max_profit <= 0):
                 return('the offer proposed not profitable and there is not previous profitable offer I should come up with a new counter offer',best_offer)  
-
+            else:
+                return('the offer proposed not profitable and there is not previous profitable offer I should come up with a new counter offer',best_offer)  
         else:
             #Profitable offer
-            if last_offer_profit < max_profit:
-                # Find all offers with a profit better than the last offer
-                return ("Is profitable but there was a better offer previously proposed",best_offer)
-            elif last_offer_profit == max_profit:
+            if last_offer_profit == max_profit:
                 #if len(all_offers_dict) <= 0: #not the first couple of offers in the conversation (NOT ACTIVE)
 
                     # Find all offers with the max profit, which includes the last offer
@@ -280,17 +385,17 @@ def evaluate_profitability(last_offer_profit,all_offers_dict,offers,offers_profi
                     return("Accept the offer",best_offer)
             else:
                 return("Accept the offer", last_entry)
-                   
-def loop_LLM_Profitable_Prompts(profit_evaluation, user_message, interactions, offers, offers_profit_user,constrain_of_user, user_offers_dictionary):
+                    
+def loop_LLM_Profitable_Prompts(profit_evaluation, user_message, interactions, offers, offers_profit_user,constrain_of_user, bot_constrain, user_offers_dictionary, bot_role, greedy):
 
     count_of_calls_to_LLM=0
 
     if profit_evaluation[0] == "Accept the offer":
-            follow_up_content = 'Accept the offer sent by your negotiation counterpart because the price and quality terms are favourable, thank your counterpart for their understanding but do not disclouse your the exitence of your payoff table. Here is the last from your countepart:'+ user_message
+            follow_up_content = 'Accept the offer sent by your negotiation counterpart because the price and quality terms are favourable, thank your counterpart for their understanding but do not disclouse your the exitence of your payoff table. (Maximum 30 words and one paragraph) Here is the last from your countepart:'+ user_message
             follow_up_response = ollama.chat(
             model='llama3', 
             messages=[
-                {"role": "system", "content": system_prompt},
+                {"role": "system", "content": system_final_prompt},
                 {"role": "user", "content": follow_up_content}
             ]
             )
@@ -301,42 +406,26 @@ def loop_LLM_Profitable_Prompts(profit_evaluation, user_message, interactions, o
             #print(count_of_calls_to_LLM)
             if (profit_evaluation[0] == 'the offer proposed not profitable and there is not previous profitable offer I should come up with a new counter offer') or (
                     profit_evaluation[0] == "the offer proposed not profitable and is worse than a previous profitable one"):
-                    follow_up_content = non_profitable_offer + user_message + follow_up_prompt_2nd + str(interactions)
+                    offers_pareto_efficient= pareto_efficient_offer(constrain_of_user,bot_constrain,bot_role)[1]
+                   
+                    follow_up_content = follow_up_prompt_2nd + user_message +  non_profitable_offer + offers_pareto_efficient  + follow_up_conversation + str(interactions)
                     follow_up_response = ollama.chat(
                     model='llama3', 
                     messages=[
-                        {"role": "system", "content": system_prompt},
+                        {"role": "system", "content": system_final_prompt},
                         {"role": "user", "content": follow_up_content}
                     ]
                     )
                     count_of_calls_to_LLM+=1
+                  
 
                     last_item_content= extract_content(follow_up_response)
+                    
                     last_offer_bot= reader_of_offers(last_item_content)
 
                     all_offers_dictionary = profit_calculator(last_offer_bot, offers, offers_profit_user,constrain_of_user)[1]
                     last_offer_bot_profitability = profit_calculator(last_offer_bot, offers, offers_profit_user,constrain_of_user)[0]
-
-                    profit_evaluation= evaluate_profitability(last_offer_bot_profitability,all_offers_dictionary,offers,offers_profit_user,constrain_of_user,user_offers_dictionary)
-    
-            elif (profit_evaluation[0] =="the offer is good, but too early try to get a better offer") or (profit_evaluation[0] =="Is profitable but there was a better offer previously proposed"):
-                follow_up_content = 'You just received a competitive offer try to get a better deal. Increase the price from' + str(profit_evaluation[1][0]) + '€ or decrease the quality from'+ str(profit_evaluation[1][1]) + 'Here is the last from your countepart:'+ user_message
-                follow_up_response = ollama.chat(
-                model='llama3', 
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": follow_up_content}
-                ]
-                )
-                count_of_calls_to_LLM+=1
-
-                last_item_content= extract_content(follow_up_response)
-                last_offer_bot= reader_of_offers(last_item_content)
-
-                all_offers_dictionary = profit_calculator(last_offer_bot, offers, offers_profit_user,constrain_of_user)[1]
-                last_offer_bot_profitability = profit_calculator(last_offer_bot, offers, offers_profit_user,constrain_of_user)[0]
-
-                profit_evaluation= evaluate_profitability(last_offer_bot_profitability,all_offers_dictionary,offers,offers_profit_user,constrain_of_user,user_offers_dictionary)
+                    profit_evaluation= evaluate_profitability(last_offer_bot_profitability,all_offers_dictionary,offers,offers_profit_user,constrain_of_user,user_offers_dictionary, greedy)
             elif profit_evaluation[0] == 'Accept the offer':
                 count_of_calls_to_LLM+=3  
                 return(extract_content(follow_up_response))
@@ -352,7 +441,7 @@ def main():
     response = ollama.chat(
         model='llama3', 
         messages=[
-                        {"role": "system", "content": system_prompt},
+                        {"role": "system", "content": system_final_prompt},
                         {"role": "user", "content": initial_prompt}
                     ]
         )
@@ -362,8 +451,8 @@ def main():
     offers_profit_user={}
     user_offers_dictionary={}
     loops=0 # FIND A WAY TO FIX THE PROBEM WITH THE LOOOOPS IT JUST STARTS AGAIN OUT OF NOWEHRE
-
-
+    constrain_user=0
+    
     # Print the bot's response
     print(extract_content(response))
     
@@ -387,17 +476,16 @@ def main():
             
             #Constrain share by the user
             if loops==0:
-                constrain_user= reader_of_constrains(last_item_content)
-                print(constrain_user)                
+                constrain_user= reader_of_constrains(last_item_content)               
                 if constrain_user == '[]': 
                     loops+=1
-                    print( f"I did not quite understand it. Please clarify your current {context_constrain}.")
+                    print( f"I did not quite understand. Please clarify your current {context_constrain} at the quality level of 0.")
                 elif isinstance(constrain_user[0], (int, float)):  # Check if constrain is an integer or float
                     loops+=1
-                    print(f"Confirming: Is {constrain_user[0]} the correct {context_constrain}?, if it is correct, please enter {constrain_user[0]} again in the chat bellow, otherwise enter your current {context_constrain} at the quality level of 0")
+                    print(f"Confirming: Is {int(round(constrain_user[0]))} the correct {context_constrain}?, if it is correct, please ONLY enter {int(round(constrain_user[0]))} again in the chat bellow, otherwise enter your current {context_constrain} at the quality level of 0")
                 else:
                     loops+=1
-                    print( f"I did not quite understand it. Please clarify your current {context_constrain}.")
+                    print( f"I did not quite understand. Please clarify your current {context_constrain} at the quality level of 0.")
             elif loops ==1:
                 constrain_user= reader_of_constrains(last_item_content)
                 #print(constrain_user)
@@ -411,10 +499,14 @@ def main():
                         final_constrain=constrain_user[0]
                 else:
                     #RANDOMLY DRAWN CONSTRAIN FROM UNIFORM DISTRIBUTION
-                    print("Thanks, for confirming this information with me. What is the ideal/desired combination of Price and Quality you aim to get out of this negotiation?")
+                    print("My apologies for persinting. What is the ideal/desired combination of Price and Quality you aim to get out of this negotiation?")
                     final_constrain=randomly_drawn
                     loops+=1
             else:
+                if final_constrain !=0:
+                    greedy=pareto_efficient_offer(final_constrain, bot_constrain, bot_role)[0]
+                else:
+                    greedy=3
                 #Read user message
                 #Offer made by the user via chat
                 last_offer_user= reader_of_offers(last_item_content)
@@ -424,9 +516,8 @@ def main():
                 #print("All Offers", all_offers_dictionary)
                # print("User Offers", user_offers_dictionary)
                 last_offer_profitability_for_bot = profit_calculator(last_offer_user,offers,offers_profit_user,final_constrain)[0]
-                rule_based_profit_evaluation= evaluate_profitability(last_offer_profitability_for_bot,all_offers_dictionary,offers,offers_profit_user,final_constrain, user_offers_dictionary)
-                
-                bot_response=loop_LLM_Profitable_Prompts(rule_based_profit_evaluation, user_message, interactions, offers, offers_profit_user,final_constrain, user_offers_dictionary)
+                rule_based_profit_evaluation= evaluate_profitability(last_offer_profitability_for_bot,all_offers_dictionary,offers,offers_profit_user,final_constrain, user_offers_dictionary, greedy)
+                bot_response=loop_LLM_Profitable_Prompts(rule_based_profit_evaluation, user_message, interactions, offers, offers_profit_user,final_constrain,bot_constrain, user_offers_dictionary,bot_role, greedy)
                 interactions.append({"role": "system", "content": bot_response})
                 print(bot_response)
 

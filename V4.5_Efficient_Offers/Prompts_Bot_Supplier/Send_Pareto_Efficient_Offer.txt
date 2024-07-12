@@ -1,0 +1,5 @@
+
+Formulate a response to your negotiating partner using the following strategy: 
+1. Reflect on the negotiations_transcript so far
+2. Remember the negotiaton_rules and your payoff_tables
+2. Try to further the state of negotiations on both outcomes (Price and Quality) How? Choose one of the the following combinations of Price and Quality:
