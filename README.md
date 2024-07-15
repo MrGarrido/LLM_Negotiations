@@ -45,15 +45,15 @@ V4 also requires the input: ollama create constrain_reader -f./V4_Understanding_
 ### **V3**:
 - **Rule-Based on both User and Bot**: If-Else Statement evaluates the profitability of the offer of the user and bot and prepares tailored prompts
 
-### **V4 **:
+### **V4**:
 - **Totally NEW Bot Led**: Understand the constrain of the counterpart first
 - **Actively ask for the user Ideal P & Q combination**: Improved check of best offer within the bot loop (now it contrasts against the best user offer)
 - **Directly calculate the user profitability and own**: Stored in separate dictionaries (Next step is pareto efficient bidding strategy)
 
-### **V4.5 **:
-- ** Pareto Efficieng Bidding Strategy**: Leverage the profit function to send offers that are maximizing the bot profits while finding a common balanced ground. 
-- ** Bot Prompts Adapted to BOTH Roles**: Now the prompting is dynamic based on the bot role and their constrain value. 
-- ** Offers Acceptance Is Greedy or Regular**: 
-    - Greedy: Bot will only accept offers that yield a profit ** higher or equal ** to the ** maximum ** profit in the pareto efficient frontier. 
-    - Regualar: Bot will only accept offers that yield a profit ** higher or equal ** to the ** minimum ** profit in the pareto efficient frontier. 
+### **V4.5**:
+- **Pareto Efficieng Bidding Strategy**: Leverage the profit function to send offers that are maximizing the bot profits while finding a common balanced ground. 
+- **Bot Prompts Adapted to BOTH Roles**: Now the prompting is dynamic based on the bot role and their constrain value. 
+- **Offers Acceptance Is Greedy or Regular**: 
+    - Greedy: Bot will only accept offers that yield a profit **higher or equal** to the **maximum** profit in the pareto efficient frontier. 
+    - Regualar: Bot will only accept offers that yield a profit **higher or equal** to the **minimum** profit in the pareto efficient frontier. 
 - This version requires the ollama Models constrain_reader and reader, check OllamaCode.txt to install them. 
