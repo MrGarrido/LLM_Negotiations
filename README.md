@@ -55,5 +55,5 @@ V4 also requires the input: ollama create constrain_reader -f./V4_Understanding_
 - **Bot Prompts Adapted to BOTH Roles**: Now the prompting is dynamic based on the bot role and their constrain value. 
 - **Offers Acceptance Is Greedy or Regular**: 
     - Greedy: Bot will only accept offers that yield a profit **higher or equal** to the **maximum** profit in the pareto efficient frontier. 
-    - Regualar: Bot will only accept offers that yield a profit **higher or equal** to the **minimum** profit in the pareto efficient frontier. 
+    - Regular: Bot will only accept offers that yield a profit **higher or equal** to the **minimum** profit in the pareto efficient frontier. 
 - This version requires the ollama Models constrain_reader and reader, check OllamaCode.txt to install them. 
