@@ -499,7 +499,7 @@ def main():
                         final_constrain=constrain_user[0]
                 else:
                     #RANDOMLY DRAWN CONSTRAIN FROM UNIFORM DISTRIBUTION
-                    print("My apologies for persinting. What is the ideal/desired combination of Price and Quality you aim to get out of this negotiation?")
+                    print("My apologies for persisting. What is the ideal/desired combination of Price and Quality you aim to get out of this negotiation?")
                     final_constrain=randomly_drawn
                     loops+=1
             else:
