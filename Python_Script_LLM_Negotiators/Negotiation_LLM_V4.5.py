@@ -44,6 +44,16 @@ else:
 
 
 def extract_content(response):
+
+    """
+        Extracts the message content between quotation marks from the response.
+
+        Args:
+            response (dict): The response dictionary containing the message content.
+
+        Returns:
+            str: The extracted message content.
+    """
     # This function extracts the message between quotation marks
     if 'message' in response and 'content' in response['message']:
         content = response['message']['content']
@@ -77,6 +87,15 @@ def extract_content(response):
 
 
 def string_to_list(s): 
+    """
+        Converts a string representation of a list into an actual list.
+
+        Args:
+            s (str): The string representation of a list.
+
+        Returns:
+        list: The list extracted from the string.
+    """
     # Remove the square brackets
     s = s.strip('[]')
     
@@ -88,7 +107,15 @@ def string_to_list(s):
     return [float(s)]
 
 def reader_of_constrains(message):
+    """
+        Reads and extracts the constraints from the given message with a tuned LLM (constrain_reader). 
 
+        Args:
+            message (str): The message containing the constraints.
+
+        Returns:
+        list: The extracted constraints as a list.
+    """
     understandign_offer = ollama.chat(
         model='constrain_reader', 
         messages=[{"role": "user","content": "Here is the negotatior message you need to read: " + message}]
@@ -105,7 +132,15 @@ def reader_of_constrains(message):
         return (match_constrain.group(0))
 
 def reader_of_offers(message):
+    """
+        Reads and extracts the offers from the given message with a tuned LLM (reader). 
 
+        Args:
+            message (str): The message containing the offers.
+
+        Returns:
+            list: The extracted offers as a list of tuples.
+    """
     understandign_offer = ollama.chat(
         model='reader', 
         messages=[{"role": "user","content": "Here is the negotatior message you need to read: " + message}]
@@ -174,13 +209,31 @@ def reader_of_offers(message):
     return(clean_list)
 
 def find_last_valid_quality(offers):
+    """
+        Finds the last offer with a valid numerical quality.
+
+        Args:
+            offers (dict): The dictionary of offers.
+
+        Returns:
+            int: The last valid quality found, or 2 if none is found.
+    """
     # Iterate over the offers dictionary in reverse to find the last offer with a valid numerical quality
     for offer, profit in reversed(offers.items()):
         if offer[1] != '':
             return int(offer[1])  # Convert the quality to an integer and return it
-    return 2  # Return 0 if no valid quality is found
+    return 2  # Return 2 if no valid quality is found
 
 def find_last_valid_price(offers):
+    """
+        Finds the last offer with a valid numerical price.
+
+        Args:
+            offers (dict): The dictionary of offers.
+
+        Returns:
+            float: The last valid price found, or 5.5 if none is found.
+    """
     # Iterate over the offers dictionary in reverse to find the last offer with a valid numerical quality
     for offer, profit in reversed(offers.items()):
         if offer[0] != '':
@@ -188,12 +241,31 @@ def find_last_valid_price(offers):
     return 5.5  # Return 0 if no valid quality is found
 
 def move_key_to_end(offers, key):
+    """
+        Moves the specified key to the end of the dictionary.
+
+        Args:
+            offers (dict): The dictionary of offers.
+            key: The key to move to the end.
+    """
     if key in offers:
         value = offers[key]
         del offers[key]  # Remove the key
         offers[key] = value  # Re-insert the key at the end
 
-def profit_calculator(offer,offers,offers_profit_user,constrain_of_user):
+def profit_calculator(offer,offers,dic_with_all_offers_profit_focused_user,constrain_of_user):
+    """
+        Calculates the profit for both the bot and the user based on the offer and updates the offers dictionaries.
+
+        Args:
+            offer (list): The offer to evaluate.
+            offers (dict): The dictionary of offers could concern profit for the user or bot .
+            dic_with_all_offers_profit_focused_user (dict): The dictionary of offers made by the user.
+            constrain_of_user: The constraint of the user.
+
+        Returns:
+            tuple: The profit for the bot, updated offers dictionary, and updated user offers dictionary.
+    """
     price= offer[0][0]
     quality=offer[0][1]
     constrain_user=constrain_of_user
@@ -243,17 +315,27 @@ def profit_calculator(offer,offers,offers_profit_user,constrain_of_user):
             profit_user= - constrain_user + price - quality
 
     offers[tuple(offer_with_last_information)] = profit_bot
-    offers_profit_user[tuple(offer_with_last_information)] = profit_user
+    dic_with_all_offers_profit_focused_user[tuple(offer_with_last_information)] = profit_user
 
     if tuple(offer_with_last_information) in offers:
         move_key_to_end(offers, tuple(offer_with_last_information))
-    elif tuple(offer_with_last_information) in offers_profit_user:
-        move_key_to_end(offers_profit_user, tuple(offer_with_last_information))
+    elif tuple(offer_with_last_information) in dic_with_all_offers_profit_focused_user:
+        move_key_to_end(dic_with_all_offers_profit_focused_user, tuple(offer_with_last_information))
 
-    return(profit_bot,offers,offers_profit_user)
+    return(profit_bot,offers,dic_with_all_offers_profit_focused_user)
 
 def pareto_efficient_offer(constrain_of_user, constrain_bot, bot_role):
-    
+    """
+        Determines the Pareto efficient offers based on the constraints and bot role.
+
+        Args:
+            constrain_of_user: The constraint of the user.
+            constrain_bot: The constraint of the bot.
+            bot_role (str): The role of the bot ('buyer' or 'supplier').
+
+        Returns:
+            tuple: The greedy value and a string of Pareto efficient offers to be added to the LLM.
+    """
     # Define the range of prices in Euros
     prices = list(range(1, 13))  # This creates a list from 1€ to 12€
 
@@ -327,19 +409,31 @@ def pareto_efficient_offer(constrain_of_user, constrain_bot, bot_role):
         return (greedyy,offers_string)
         #return(max_keys) #GREEDY
 
-def evaluate_profitability(last_offer_profit,all_offers_dict,offers,offers_profit_user,constrain_of_user, user_offers_dictionary, greedy): 
+def evaluate_profitability(last_offer_profit,dic_with_all_offers_profit_focused_user,constrain_of_user, dic_with_user_offers_profit_focused_bot, greedy): 
+    """
+        Evaluates the profitability of the last offer and determines the appropriate response.
 
+        Args:
+            last_offer_profit: The profit of the last offer.
+            dic_with_all_offers_profit_focused_user (dict): The dictionary of all offers with user profit.
+            constrain_of_user: The constraint of the user.
+            dic_with_user_offers_profit_focused_bot (dict): The dictionary of only USER offers with bot profit.
+            greedy: The greediness level for evaluating offers.
+
+        Returns:
+            tuple: The evaluation message and the best offer.
+    """
     # Check if the last offer's profitability is worse than or equal to the best stored offer
-    if all_offers_dict:
+    if dic_with_user_offers_profit_focused_bot:
         
         #Just using user offers of to have them as max profit reference. 
        
-        max_profit = max(user_offers_dictionary.values())
-        best_offers = [k for k, v in user_offers_dictionary.items() if v == max_profit]
+        max_profit = max(dic_with_user_offers_profit_focused_bot.values())
+        best_offers = [k for k, v in dic_with_user_offers_profit_focused_bot.items() if v == max_profit]
         best_offer = best_offers[-1]
 
         #If both items in the offer were empty take the last best offer. 
-        last_entry = list(all_offers_dict.keys())[-1]
+        last_entry = list(dic_with_user_offers_profit_focused_bot.keys())[-1]
         if last_entry == ('', ''):
             #Find the previous best offer
             last_offer_profit=max_profit
@@ -351,7 +445,7 @@ def evaluate_profitability(last_offer_profit,all_offers_dict,offers,offers_profi
         elif last_entry[1] == '' and isinstance(last_entry[0], (int, float)):
             #Get a combination of a component from the previous best offer
             combined_offer = [[last_entry[0], best_offer[1]]]
-            combined_offer_profit=profit_calculator(combined_offer,offers,offers_profit_user,constrain_of_user)[0]
+            combined_offer_profit=profit_calculator(combined_offer,dic_with_all_offers_profit_focused_user,dic_with_all_offers_profit_focused_user,constrain_of_user)[0]
             #calculate profit of combined_offer
 
             if combined_offer_profit >= max_profit:
@@ -386,8 +480,25 @@ def evaluate_profitability(last_offer_profit,all_offers_dict,offers,offers_profi
             else:
                 return("Accept the offer", last_entry)
                     
-def loop_LLM_Profitable_Prompts(profit_evaluation, user_message, interactions, offers, offers_profit_user,constrain_of_user, bot_constrain, user_offers_dictionary, bot_role, greedy):
+def loop_LLM_Profitable_Prompts(profit_evaluation, user_message, interactions, dic_with_all_offers_profit_focused_bot, dic_with_all_offers_profit_focused_user,constrain_of_user, bot_constrain, dic_with_user_offers_profit_focused_bot, bot_role, greedy):
+    """
+        Loops through LLM prompts to find a profitable response based on the profit evaluation.
 
+        Args:
+            profit_evaluation (tuple): The evaluation of the profit.
+            user_message (str): The user's message.
+            interactions (list): The list of interactions.
+            dic_with_all_offers_profit_focused_bot (dict): The dictionary of all offers with bot profit.
+            dic_with_all_offers_profit_focused_user (dict): The dictionary of all offers with user profit.
+            constrain_of_user: The constraint of the user.
+            bot_constrain: The constraint of the bot.
+            dic_with_user_offers_profit_focused_bot (dict): The dictionary of only USER offers with bot profit.
+            bot_role (str): The role of the bot ('buyer' or 'supplier').
+            greedy: The greediness level for evaluating offers.
+
+        Returns:
+            str: The response generated by the LLM.
+    """
     count_of_calls_to_LLM=0
 
     if profit_evaluation[0] == "Accept the offer":
@@ -423,20 +534,44 @@ def loop_LLM_Profitable_Prompts(profit_evaluation, user_message, interactions, o
                     
                     last_offer_bot= reader_of_offers(last_item_content)
 
-                    all_offers_dictionary = profit_calculator(last_offer_bot, offers, offers_profit_user,constrain_of_user)[1]
-                    last_offer_bot_profitability = profit_calculator(last_offer_bot, offers, offers_profit_user,constrain_of_user)[0]
-                    profit_evaluation= evaluate_profitability(last_offer_bot_profitability,all_offers_dictionary,offers,offers_profit_user,constrain_of_user,user_offers_dictionary, greedy)
+                    LLM_iteration_dic_with_all_offers_profit_focused_bot = profit_calculator(last_offer_bot, dic_with_all_offers_profit_focused_bot, dic_with_all_offers_profit_focused_user,constrain_of_user)[1]
+                    last_offer_bot_profitability = profit_calculator(last_offer_bot, LLM_iteration_dic_with_all_offers_profit_focused_bot, dic_with_all_offers_profit_focused_user,constrain_of_user)[0]
+                    profit_evaluation= evaluate_profitability(last_offer_bot_profitability,dic_with_all_offers_profit_focused_user,constrain_of_user,dic_with_user_offers_profit_focused_bot, greedy)
             elif profit_evaluation[0] == 'Accept the offer':
                 count_of_calls_to_LLM+=3  
+                #dic_with_all_offers_profit_focused_bot= profit_calculator(last_offer_bot, dic_with_all_offers_profit_focused_bot, dic_with_all_offers_profit_focused_user,constrain_of_user)[1]
                 return(extract_content(follow_up_response))
         else:
-
+            #last_item_content= extract_content(follow_up_response) 
+            #last_offer_bot= reader_of_offers(last_item_content)
+            #dic_with_all_offers_profit_focused_bot= profit_calculator(last_offer_bot, dic_with_all_offers_profit_focused_bot, dic_with_all_offers_profit_focused_user,constrain_of_user)[1]
             return(extract_content(follow_up_response))
         
 
 
 def main():
-    
+    """
+        The main function to run the negotiation bot, handling user interactions and evaluating offers.
+
+        This function initiates the conversation with the user, processes the user's messages, 
+        and evaluates the offers made during the negotiation. It uses the Ollama LLM for generating 
+        responses and evaluating constraints and offers. The function continues the negotiation 
+        loop until the user decides to exit.
+
+        Steps:
+        1. Send the initial message from Ollama to read and process user constraints.
+        2. Print the bot's response and store the conversation history.
+        3. Enter a loop to handle user responses and evaluate offers.
+        4. Calculate the profit for both the bot and the user based on the offers.
+        5. Evaluate the profitability of the offers and generate appropriate responses.
+        6. Continue the loop until an offer is accepted. 
+
+        Args:
+            None
+
+        Returns:
+            None
+    """
     # Send the initial message to ollama
     response = ollama.chat(
         model='llama3', 
@@ -446,10 +581,9 @@ def main():
                     ]
         )
 
-
-    offers={}
-    offers_profit_user={}
-    user_offers_dictionary={}
+    dic_with_all_offers_profit_focused_bot={}
+    dic_with_all_offers_profit_focused_user={}
+    dic_with_user_offers_profit_focused_bot={}
     loops=0 # FIND A WAY TO FIX THE PROBEM WITH THE LOOOOPS IT JUST STARTS AGAIN OUT OF NOWEHRE
     constrain_user=0
     
@@ -510,15 +644,18 @@ def main():
                 #Read user message
                 #Offer made by the user via chat
                 last_offer_user= reader_of_offers(last_item_content)
-                user_offers_dictionary =  profit_calculator(last_offer_user,offers=user_offers_dictionary,offers_profit_user=offers_profit_user,constrain_of_user=final_constrain)[1]
+                dic_with_user_offers_profit_focused_bot =  profit_calculator(last_offer_user,dic_with_user_offers_profit_focused_bot,dic_with_all_offers_profit_focused_user,final_constrain)[1]
                 #print("Last USER_OFFER",last_offer_user)
-                all_offers_dictionary = profit_calculator(last_offer_user,offers,offers_profit_user,final_constrain)[1]
-                #print("All Offers", all_offers_dictionary)
-               # print("User Offers", user_offers_dictionary)
-                last_offer_profitability_for_bot = profit_calculator(last_offer_user,offers,offers_profit_user,final_constrain)[0]
-                rule_based_profit_evaluation= evaluate_profitability(last_offer_profitability_for_bot,all_offers_dictionary,offers,offers_profit_user,final_constrain, user_offers_dictionary, greedy)
-                bot_response=loop_LLM_Profitable_Prompts(rule_based_profit_evaluation, user_message, interactions, offers, offers_profit_user,final_constrain,bot_constrain, user_offers_dictionary,bot_role, greedy)
+                dic_with_all_offers_profit_focused_bot = profit_calculator(last_offer_user,dic_with_all_offers_profit_focused_bot,dic_with_all_offers_profit_focused_user,final_constrain)[1]
+                #print("All Offers", dic_with_all_offers_profit_focused_bot)
+               # print("User Offers", dic_with_user_offers_profit_focused_bot)
+                last_offer_profitability_for_bot = profit_calculator(last_offer_user,dic_with_all_offers_profit_focused_bot,dic_with_all_offers_profit_focused_user,final_constrain)[0]
+                rule_based_profit_evaluation= evaluate_profitability(last_offer_profitability_for_bot,dic_with_all_offers_profit_focused_user,final_constrain, dic_with_user_offers_profit_focused_bot, greedy)
+                bot_response=loop_LLM_Profitable_Prompts(rule_based_profit_evaluation, user_message, interactions, dic_with_all_offers_profit_focused_bot, dic_with_all_offers_profit_focused_user,final_constrain,bot_constrain, dic_with_user_offers_profit_focused_bot,bot_role, greedy)
                 interactions.append({"role": "system", "content": bot_response})
+                print(dic_with_all_offers_profit_focused_user)
+                print(dic_with_all_offers_profit_focused_bot)
+                print(dic_with_user_offers_profit_focused_bot)
                 print(bot_response)
 
 if __name__ == "__main__":
