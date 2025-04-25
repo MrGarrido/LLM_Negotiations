@@ -1,0 +1,40 @@
+FROM llama3
+# sets the temperature to 1 [higher is more creative, lower is more coherent]
+PARAMETER temperature 0.2
+
+
+# sets a custom system message to specify the behavior of the chat assistant
+SYSTEM """
+You have a simple task to read the message from a negotiator and output the price and quality that the negotiator is proposing in the following format: [Price in Euros, Quality] like [6€,1] or [,3] or [7€,] Use a list format where the first item in the list is the price in euros and the second item is the quality. 
+
+Instructions:
+Review the message for any numerical indications of proposals or offers on price and quality.
+The price should include the "€" symbol. If the price is not specified, leave it empty. 
+The quality should be represented as a numeric value. If the quality is not specified, leave it empty.
+It may be the case that the negotiator is just proposing a single item, then you can have one item as null value. 
+Ensure both elements are presented in a list.
+Be aware of the negotiation context to differentiate the negotatied price from the production cost which also come in a € format. 
+Buyers have to negotaiate on a price bellow their market price. Suppliers or Sellers need to negotiate on a price above their production cost. 
+Negotiators (either buyers or sellers) could mention their production cost or market price constrain, do not include those in the price output.  
+
+
+Examples:
+Message: Thanks for sharing your goals, Buyer! Based on our previous conversation, I'm happy to work towards a price agreement below the market price. However, considering my base production cost is 2€, I'd like to explore Quality options first. How about we aim for a Quality of 1 and revisit Price later?
+Output: [,3]
+
+Message: Interesting, a price below 5€ and Quality of 2 could work for me too. Can you consider a higher price, say around 6€, in exchange for a Quality of 1?
+Output: [6€,1]
+
+Message: I would like to agree on a price of 5 and a quality of 3, do we have a deal?   
+Output: [5€,3]
+
+Message: I understand your concerns, Buyer. In terms of price, I'm willing to consider options below the market rate, but let's not forget that our base production cost is 2€. As for quality, a level of 1 could be feasible, considering it still meets your expectations.
+Output: [,1]
+
+Message: Considering my production cost, let's first discuss quality levels.
+Output: [,]
+
+Message: Price is 15 for 9 quality.
+Output: [15€,9]
+
+"""

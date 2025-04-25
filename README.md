@@ -1,12 +1,15 @@
 # LLM_Negotiations
 
-This repository leverages Ollama.
+This repository shows the initial steps in the development of the NegoBot leveraged in my first PhD experiment it leverages Ollama.
+
+## The following steps are tailored to V0 to V4
 
 1st install Ollama through https://ollama.com
 
-2nd Run ollama in your terminal through
+2nd Check if ollama is active in your terminal through
 
 ollama run llama3
+you can enter /bye and proceed...
 
 3rd Paste this line of code in yout terminal to create a tailored LLM named "reader"
 
@@ -16,7 +19,9 @@ Finally, Run the version of the you Pyhton script prefer (Negotiaton_LLM_VX.py)
 
 V4 also requires the input: ollama create constrain_reader -f./V4_Understanding_Constrain/Modelfile_reader_of_constrains
 
+## The actual system used in this experiment can be tested in V5_garrido_negotiations_new
 
+To try it out in your terminal follow the steps in V5_garrido_negotiations_new/README.md
 
 
 ## Arquitecture Iterations
@@ -57,3 +62,11 @@ V4 also requires the input: ollama create constrain_reader -f./V4_Understanding_
     - Greedy: Bot will only accept offers that yield a profit **higher or equal** to the **maximum** profit in the pareto efficient frontier. 
     - Regular: Bot will only accept offers that yield a profit **higher or equal** to the **minimum** profit in the pareto efficient frontier. 
 - This version requires the ollama Models constrain_reader and reader, check OllamaCode.txt to install them. 
+
+### **V5**:
+The system implements a hybrid approach that checks LLM outputs against Pareto efficient allocations of price and quality to ensure a minimum profit threshold.
+- Note that this system only enters this check if the user has provided a tangible offer.
+    - Flaw: This flaw is corrected in the next version. However, the first experiment used this version. 
+
+### **V5.1**:
+The key improvement to the hybrid system resides in its ability to **always** check if the LLM output contains a reference to both negotiation terms (price and quality) and whether these terms are profitable enough at the greed level determined by the Pareto efficient function.
