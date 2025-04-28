@@ -1,0 +1,21 @@
+2025-04-28 12:51:23,880 - __main__ - INFO - Available Ollama models:
+NAME                           ID              SIZE      MODIFIED      
+reader_of_constrains:latest    3203c6f02284    4.7 GB    2 days ago       
+reader_of_offers:latest        89c7bdb71ebe    4.7 GB    2 days ago       
+reader:latest                  8634fc4b36f1    4.7 GB    4 days ago       
+llama3:latest                  365c0bd3c000    4.7 GB    4 days ago       
+constrain_reader:latest        3203c6f02284    4.7 GB    7 months ago     
+negotiator:latest              a73eb6967d53    4.7 GB    10 months ago    
+
+2025-04-28 12:51:23,880 - __main__ - INFO - Creating reader_of_offers model...
+2025-04-28 12:51:23,927 - __main__ - INFO - Creating reader_of_constrains model...
+2025-04-28 12:51:23,958 - __main__ - INFO - Ollama models created successfully!
+2025-04-28 12:51:23,969 - __main__ - INFO - Available Ollama models:
+NAME                           ID              SIZE      MODIFIED               
+reader_of_offers:latest        89c7bdb71ebe    4.7 GB    Less than a second ago    
+reader_of_constrains:latest    3203c6f02284    4.7 GB    Less than a second ago    
+reader:latest                  8634fc4b36f1    4.7 GB    4 days ago                
+llama3:latest                  365c0bd3c000    4.7 GB    4 days ago                
+constrain_reader:latest        3203c6f02284    4.7 GB    7 months ago              
+negotiator:latest              a73eb6967d53    4.7 GB    10 months ago             
+

@@ -1,0 +1,11 @@
+ollama create reader -f./garrido_negotiations/llm_v4_5/Ollama_LLMs/Modelfile_reader_of_offers
+
+Remove a model
+ollama rm reader
+
+ollama create constrain_reader -f./garrido_negotiations/llm_v4_5/Ollama_LLMs/Modelfile_reader_of_constrains
+
+Remove a model
+ollama rm constrain_reader
+
+

@@ -1,0 +1,24 @@
+ (end of counterpart message). 
+Formulate a (max 20 words one paragraph) response to your negotiating partner using the following strategy (Just output your response, it will be directly sent to the counterpart): 
+1. Reflect on the negotiations_transcript so far.
+2. Remember the negotiaton_rules.
+3. Try send an offer with both outcomes (Price and Quality) by matching the price in your counterpart's message based on the following logic and examples:
+If the price mentioned in the counterpart message is in the list_of_offers_to_choose_from: Example (List_of_offers_to_choose_from: [Price of 6€ and quality of 0 | Price of 7€ and quality of 1 | Price of 8€ and quality of 2 | Price of 9€ and quality of 3 | Price of 10€ and quality of 4]),(counterpart message:  Price of 5) Outside of the list, (counterpart message:  Price of 6) Inside of the List.
+If the price mentioned in the counterpart message is higher than the maximum price in the list_of_offers_to_choose_from:  Example (List_of_offers_to_choose_from: [Price of 6€ and quality of 0 | Price of 7€ and quality of 1 | Price of 8€ and quality of 2 | Price of 9€ and quality of 3 | Price of 10€ and quality of 4]),(counterpart message:  Price of 5) Lower than maximum, (counterpart message:  Price of 11) higher than maximum.
+If the price mentioned in the counterpart message is lower than the minimum price in the list_of_offers_to_choose_from:  Example (List_of_offers_to_choose_from: [Price of 6€ and quality of 0 | Price of 7€ and quality of 1 | Price of 8€ and quality of 2 | Price of 9€ and quality of 3 | Price of 10€ and quality of 4]),(counterpart message:  Price of 5) Lower than minimum, (counterpart message:  Price of 11) higher than minimum.
+Putting the logic in practice:
+If the price mentioned in the counterpart message is lower than the minimum price in the list_of_offers_to_choose_from: then choose the combination with the lowest price in the List_of_offers_to_choose_from: Example (List_of_offers_to_choose_from: [Price of 6€ and quality of 0 | Price of 7€ and quality of 1 | Price of 8€ and quality of 2 | Price of 9€ and quality of 3 | Price of 10€ and quality of 4]),(counterpart message:  Price of 5) Your reply: How about a Price of 6€ and quality of 0?, (counterpart message:  Price of 3)Your reply: How about a Price of 6€ and quality of 0?.
+If the price mentioned in the counterpart message is higher than the maximum price in the list_of_offers_to_choose_from: then add quality of 4 to the price mentioned in the counterpart message: Example (List_of_offers_to_choose_from: [Price of 6€ and quality of 0 | Price of 7€ and quality of 1 | Price of 8€ and quality of 2 | Price of 9€ and quality of 3 | Price of 10€ and quality of 4]),(counterpart message:  Price of 11)  Your reply: How about a Price of 11€ and quality of 4?, (counterpart message:  Price of 12) Your reply: How about a Price of 12€ and quality of 4?.
+If the price mentioned in the counterpart message is in the list_of_offers_to_choose_from: then choose the quality that goes with that price: Example (List_of_offers_to_choose_from: [Price of 6€ and quality of 0 | Price of 7€ and quality of 1 | Price of 8€ and quality of 2 | Price of 9€ and quality of 3 | Price of 10€ and quality of 4]),(counterpart message:  Price of 9)  Your reply: How about a Price of 9€ and quality of 3?, (counterpart message:  Price of 7) Your reply: How about a Price of 7€ and quality of 1?.
+Examples:{Example_1,[(counterpart message:  Price of 5),
+(List_of_offers_to_choose_from: [Price of 6€ and quality of 0 | Price of 7€ and quality of 1 | Price of 8€ and quality of 2 | Price of 9€ and quality of 3 | Price of 10€ and quality of 4]),
+(Your reply: Your reply: A price of 6 and a quality of 0 would definitely satisfy us both.)]},
+{Example_2,[(counterpart message: I can work with a price higher or equal to 11, at that price point, what quality do you need?), 
+(List_of_offers_to_choose_from: [Price of 6€ and quality of 0 | Price of 7€ and quality of 1 | Price of 8€ and quality of 2 | Price of 9€ and quality of 3 | Price of 10€ and quality of 4]),
+(Your reply: I understand you need to have price of 11€ or higher. How about we aim for a price of 11€ with a quality level of 4?)]}
+{Example_3,[(counterpart message:  I need a price higher than 4, what quality do you want for a price above 4€?),
+(List_of_offers_to_choose_from: [Price of 5€ and quality of 0 | Price of 6€ and quality of 1 | Price of 7€ and quality of 2 | Price of 8€ and quality of 3 | Price of 9€ and quality of 4]),
+(Your reply: I understand you need to have a price higher than 5€. How about we aim for a price of 5€ and a quality of 0?)]}
+Now is your turn, based on the counterpart message avobe ending as (end of counterpart message) which combination of price and quality would work.
+List_of_offers_to_choose_from:
+[
