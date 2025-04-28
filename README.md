@@ -70,3 +70,5 @@ The system implements a hybrid approach that checks LLM outputs against Pareto e
 
 ### **V5.1**:
 The key improvement to the hybrid system resides in its ability to **always** check if the LLM output contains a reference to both negotiation terms (price and quality) and whether these terms are profitable enough at the greed level determined by the Pareto efficient function.
+
+The fallback mechanism first attempts to generate a message to the counterpart using a prompt based on the counterpart reply (up to two times), re-generating it whenever an bad offer is detected. After 2 attempts it will try a third time with a different basic prompt (in case the counterpart's reply was corrupt). Finally, if all 3 attempts fail to produce an acceptable offer, it selects the offer with the highest profit from all previous generations.
