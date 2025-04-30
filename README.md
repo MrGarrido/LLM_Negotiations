@@ -84,7 +84,8 @@ System prompt has three components:
 
 #### Why do we need a dynamic prompt?
 - Every negotiation round has a random constraint (i.e., Procution Cost {1,2,3}) which determines the cost structure, thus, the payoffs described in the **system prompt** need to be calculated for the random constraint. 
-- The user prompt is adapted based on the counterpart message. Sometimes the system should counter-offer, or accept the offer, or remind the user of the use of the interface. How? We systematically combine the output from two LLMs prompted as Offer Reader and Constraint Reader to assess the required chatbot response (i.e., offer acceptance, counteroffer). 
+- The user prompt is adapted based on the counterpart message. Sometimes the system should counter-offer, or accept the offer, or remind the user of the use of the interface.
+  - How? We systematically combine the output from two LLMs prompted as Offer Reader and Constraint Reader to assess the required chatbot response (i.e., offer acceptance, counteroffer).
 - During the negotiation conversation the dialogue is fed via user prompts with instructions to remember the negotiation rules, payoffs, and conversation history. Additionally, we leveraged in-context learning with few-shot examples of desired replies to user messages.
 
 ### Hybrid (Rule-Base + LLM):
@@ -96,8 +97,11 @@ The offer acceptance mechanism does not leverage generative AI, is purely rule-b
 
 #### Offer Making
 Applies a rule-based check on the profitability of the LLM generated message before sending it to the counterpart. 
-1st LLM generates a **tentative** response message with a tangible offer (Needs to quote: Price & Quality). 
-2nd If the profit extracted from the **tentative** counteroffer message is not pareto efficient, then there is a loop that forces the chatbot to **generate another tentative** message. 
-3rd The 2nd step is repeated up to three times, if no offer yields a pareto efficient profit or higher, then chatbot replies with a message with the best offer among the worst.
+
+1. LLM generates a **tentative** response message with a tangible offer (Needs to quote: Price & Quality). 
+2. If the profit extracted from the **tentative** counteroffer message is not pareto efficient, then there is a loop that forces the chatbot to **generate another tentative** message. 
+3. The 2nd step is repeated up to three times, if no offer yields a pareto efficient profit or higher, then chatbot replies with a message with the best offer among the worst.
+
+
 
 
