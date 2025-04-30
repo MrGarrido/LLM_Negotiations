@@ -2,10 +2,8 @@
 """
 README for V5.1_garrido_negotiations.
 
-This file provides an overview of the V5_garrido_negotiations system.
+This file provides an overview of the V5.1_garrido_negotiations system.
 """
-
-# V5_garrido_negotiations
 
 A hybrid negotiation system that leverages LLMs to conduct negotiations while ensuring Pareto efficiency.
 
@@ -87,6 +85,35 @@ The system consists of the following components:
 6. **Live Bargaining System**: Manages the negotiation process
 7. **Hybrid Negotiation System**: Integrates all components and checks LLM outputs against Pareto efficient allocations
 
-## License
+## Dynamic Prompting:
+![Prompting_strategy](https://github.com/user-attachments/assets/4287653f-bc49-46ec-b6f1-11643bbc5f8b)
+System prompt has three components:
+- Describes agent role (buyer/supplier).
+- Set of negotiation issues (Price & Quality) and their respective payoffs.
+- Negotiation protocol rules.
 
+### Why do we need a dynamic prompt?
+- Every negotiation round has a random constraint (i.e., Procution Cost {1,2,3}) which determines the cost structure, thus, the payoffs described in the **system prompt** need to be calculated for the random constraint. 
+- The user prompt is adapted based on the counterpart message. Sometimes the system should counter-offer, or accept the offer, or remind the user of the use of the interface.
+  - How? We systematically combine the output from two LLMs prompted as Offer Reader and Constraint Reader to assess the required chatbot response (i.e., offer acceptance, counteroffer).
+- During the negotiation conversation the dialogue is fed via user prompts with instructions to remember the negotiation rules, payoffs, and conversation history. Additionally, we leveraged in-context learning with few-shot examples of desired replies to user messages.
+
+## Hybrid (Rule-Base + LLM):
+![Hybrid](https://github.com/user-attachments/assets/6cb3a64d-95fa-4968-9bfd-5df1f2736d3b)
+#### Offer Acceptance
+The offer acceptance mechanism does not leverage generative AI, is purely rule-based.
+- If the offer from the counterpart yields an acceptable profit, then the chatbot thanks the counterpart and the negotiation automatically ends with an agreement.
+- What makes an offer acceptable? It must yield a pareto efficient profit or higher. Note that for an offer to be pareto efficient, the combination of price and quality has to maximize common profit while minimizing individual profit differences.
+
+### Offer Making
+Applies a rule-based check on the profitability of the LLM generated message before sending it to the counterpart. 
+
+1. LLM generates a **tentative** response message with a tangible offer (Needs to quote: Price & Quality). 
+2. If the profit extracted from the **tentative** counteroffer message is not pareto efficient, then there is a loop that forces the chatbot to **generate another tentative** message. 
+3. The 2nd step is repeated up to three times, if no offer yields a pareto efficient profit or higher, then chatbot replies with a message with the best offer among the worst.
+
+## License
 MIT License
+
+
+
