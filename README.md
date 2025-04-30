@@ -2,7 +2,9 @@
 
 This repository shows the initial steps in the development of the NegoBot leveraged in my first PhD experiment it leverages Ollama.
 
-## The following steps are tailored to V0 to V4
+**V5.1** is the most recent release and has a dedicated README with instructions on how to use it.
+ 
+## The following steps are tailored to V0 to V4 (Rudimentary)
 
 1st install Ollama through https://ollama.com
 
@@ -72,3 +74,30 @@ The system implements a hybrid approach that checks LLM outputs against Pareto e
 The key improvement to the hybrid system resides in its ability to **always** check if the LLM output contains a reference to both negotiation terms (price and quality) and whether these terms are profitable enough at the greed level determined by the Pareto efficient function.
 
 The fallback mechanism first attempts to generate a message to the counterpart using a prompt based on the counterpart reply (up to two times), re-generating it whenever an bad offer is detected. After 2 attempts it will try a third time with a different basic prompt (in case the counterpart's reply was corrupt). Finally, if all 3 attempts fail to produce an acceptable offer, it selects the offer with the highest profit from all previous generations.
+
+### Dynamic Prompting:
+![Prompting_strategy](https://github.com/user-attachments/assets/4287653f-bc49-46ec-b6f1-11643bbc5f8b)
+System prompt has three components:
+- Describes agent role (buyer/supplier).
+- Set of negotiation issues (Price & Quality) and their respective payoffs.
+- Negotiation protocol rules.
+
+#### Why do we need a dynamic prompt?
+- Every negotiation round has a random constraint (i.e., Procution Cost {1,2,3}) which determines the cost structure, thus, the payoffs described in the **system prompt** need to be calculated for the random constraint. 
+- The user prompt is adapted based on the counterpart message. Sometimes the system should counter-offer, or accept the offer, or remind the user of the use of the interface. How? We systematically combining the output from two LLMs prompted as Offer Reader and Constraint Reader to assess the required chatbot response (i.e., offer acceptance, counteroffer). 
+- During the negotiation conversation the dialogue is fed via user prompts with instructions to remember the negotiation rules, payoffs, and conversation history. Additionally, we leveraged in-context learning with few-shot examples of desired replies to user messages.
+
+### Hybrid (Rule-Base + LLM):
+![Hybrid_Bot](https://github.com/user-attachments/assets/87eda297-2843-40cb-a1b2-e0ae4f2140a9)
+#### Offer Acceptance
+The offer acceptance mechanism does not leverage generative AI, is purely rule-based.
+- If the offer from the counterpart yields an acceptable profit, then the chatbot thanks the counterpart and the negotiation automatically ends with an agreement.
+- What makes an offer acceptable? It must yield a pareto efficient profit or higher. Note that for an offer to be pareto efficient, it combination of price and quality has to maximize common profit while minimizing individual profit differences.
+
+#### Offer Making
+Applies a rule-based check on the profitability of the LLM generated message before sending it to the counterpart. 
+1st LLM generates a **tentative** response message with a tangible offer (Needs to quote: Price & Quality). 
+2nd If the profit extracted from the **tentative** counteroffer message is not pareto efficient, then there is a loop that forces the chatbot to **generate another tentative** message. 
+3rd The 2nd step is repeated up to three times, if no offer yields a pareto efficient profit or higher, then chatbot replies with a message with the best offer among the worst.
+
+
