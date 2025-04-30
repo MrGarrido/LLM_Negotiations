@@ -2,7 +2,9 @@
 
 This repository shows the initial steps in the development of the NegoBot leveraged in my first PhD experiment it leverages Ollama.
 
-**V5.1** is the most recent release and has a dedicated README with instructions on how to use it.
+**V5.1** is the most recent release and has a dedicated README with instructions on how to use it (go to LLM_Negotiations\V5.1_garrido_negotiations)
+
+
  
 ## The following steps are tailored to V0 to V4 (Rudimentary)
 
