@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-"""
-README for V5.1_garrido_negotiations.
-
-This file provides an overview of the V5.1_garrido_negotiations system.
-"""
-
 A hybrid negotiation system that leverages LLMs to conduct negotiations while ensuring Pareto efficiency.
 
 ## Overview
